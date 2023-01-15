@@ -21,8 +21,8 @@ void handleCommands(Manager& manager, string command){
     //     request();
     // else if (command == "rl")
     //     release();
-    // else if (command == "to")
-    //     timeout();
+    else if (command == "to")
+        manager.timeout();
 }
 
 int main() {
