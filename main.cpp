@@ -15,8 +15,11 @@ void handleCommands(Manager& manager, string command){
         cin >> priority;
         manager.create(priority);
     }
-    // else if (command == "de")
-    //     destroy();
+    else if (command == "de") {
+        int index;
+        cin >> index;
+        manager.destroy(index);
+    }
     // else if (command == "rq")
     //     request();
     // else if (command == "rl")
@@ -32,7 +35,7 @@ int main() {
 
     string command;
     cin >> command;
-    while (command != "end") {
+    while (command != "quit") {
         handleCommands(manager, command);
         cin >> command;
     }

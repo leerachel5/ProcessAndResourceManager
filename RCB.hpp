@@ -1,7 +1,10 @@
 #ifndef RCB_HPP
 #define RCB_HPP
 
-#include "LinkedList.hpp"
+#include <list>
+
+using namespace std;
+
 
 class RCB {
 public:
@@ -11,7 +14,7 @@ public:
 private:
     int inventory;
     int state;
-    LinkedList<int> waitlist;
+    list<int> waitlist;
 };
 
 #endif

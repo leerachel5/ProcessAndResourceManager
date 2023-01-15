@@ -1,9 +1,12 @@
 #include "RCB.hpp"
+#include <list>
+
+using namespace std;
+
 
 RCB::RCB()
-    : inventory{-1}, state{-1}
 {}
 
 RCB::RCB(int initialInv)
-    : inventory{initialInv}, state{initialInv}, waitlist(LinkedList<int>())
+    : inventory{initialInv}, state{initialInv}, waitlist(list<int>())
 {}
