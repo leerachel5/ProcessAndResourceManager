@@ -16,10 +16,11 @@ public:
     Manager();
     void init();
     void create(int priority);
+    void timeout();
+    int runningProcess();
     void scheduler();
 
 private:
-    int runningProcess;
     PCB pda[PDA_MAX_SIZE];
     RCB rda[RDA_UNITS];
     LinkedList<int> rl[RL_LEVELS];

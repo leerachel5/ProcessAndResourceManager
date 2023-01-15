@@ -13,7 +13,7 @@ const int INITIAL_PROCESS_PRIORITY = 0;
 
 
 Manager::Manager()
-    : runningProcess{-1}, pdaSz{0}
+    : pdaSz{0}
 {
     rda[0] = RCB(RCB0_STARTING_UNITS);
     rda[1] = RCB(RCB1_STARTING_UNITS);
@@ -51,19 +51,38 @@ void Manager::create(int priority) {
     if (!(priority == 1 || priority == 2))
         throw invalid_argument("All processes other than the initial process must have a priority of 1 or 2.");
 
-    PCB newPCB(runningProcess, priority);
+    PCB newPCB(runningProcess(), priority);
     pda[pdaSz] = newPCB;
     rl[priority].push_back(pdaSz);
     pdaSz++;
     scheduler();
 }
 
-void Manager::scheduler() {
+void Manager::timeout() {
+    int runningP = runningProcess();
+    bool found = false;
+    int level = RL_LEVELS - 1;
+
+    while (!found && level >= 0) {
+        if (rl[level].size() > 0 && runningP == rl[level].peek()) {
+            rl[level].push_back(runningP);
+            rl[level].remove_front();
+            found = true;
+        }
+        level--;
+    }
+    scheduler();
+}
+
+int Manager::runningProcess(){
     if (rl[2].size() > 0)
-        runningProcess = rl[2].peek();
+        return rl[2].peek();
     else if (rl[1].size() > 0)
-        runningProcess = rl[1].peek();
+        return rl[1].peek();
     else
-        runningProcess = rl[0].peek();
-    cout << runningProcess << " ";
+        return rl[0].peek();
+}
+
+void Manager::scheduler() {
+    cout << "Current running process: " << runningProcess() << endl;
 }
