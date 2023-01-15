@@ -7,16 +7,22 @@
 
 using namespace std;
 
+const int PDA_MAX_SIZE = 16;
+const int RDA_UNITS = 4;
+const int RL_LEVELS = 3;
+
 class Manager {
 public:
     Manager();
     void init();
-    int runningProcess();
+    void create(int priority);
+    void scheduler();
 
 private:
-    PCB pda[16];
-    RCB rda[4];
-    LinkedList<int> rl[3];
+    int runningProcess;
+    PCB pda[PDA_MAX_SIZE];
+    RCB rda[RDA_UNITS];
+    LinkedList<int> rl[RL_LEVELS];
     int pdaSz;
 };
 
