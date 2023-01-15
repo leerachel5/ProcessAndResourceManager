@@ -10,8 +10,11 @@ void handleCommands(Manager& manager, string command){
         manager.init();
         cout << "Manager initialized..." << endl;
     }
-    // else if (command == "cr")
-    //     create();
+    else if (command == "cr") {
+        int priority;
+        cin >> priority;
+        manager.create(priority);
+    }
     // else if (command == "de")
     //     destroy();
     // else if (command == "rq")
@@ -29,10 +32,10 @@ int main() {
 
     string command;
     cin >> command;
-    handleCommands(manager, command);
-
-    cout << "Printing currently running process..." << endl;
-    cout << manager.runningProcess() << endl;
+    while (command != "end") {
+        handleCommands(manager, command);
+        cin >> command;
+    }
 
     return 0;
 }
