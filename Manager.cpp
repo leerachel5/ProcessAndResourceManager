@@ -6,13 +6,40 @@
 using namespace std;
 
 namespace {
-    void destroyHelper(PCB pda[], RL& rl, int& pdaSz, int index) {
+    void destroyHelper(PCB pda[], RCB rda[], RL& rl, int& pdaSz, int index) {
+
+    // Recursively destroy all descendant processes
     list<int> chldrn = pda[index].children();
     while (chldrn.size() > 0) {
-        destroyHelper(pda, rl, pdaSz, chldrn.front());
+        destroyHelper(pda, rda, rl, pdaSz, chldrn.front());
         chldrn.pop_front();
     }
+
+    // Release all resources held by the destroyed process
+    list<pair<int, int>> res = pda[index].resources();
+    for (list<pair<int, int>>::iterator it = res.begin(); it != res.end(); it++) {
+        rda[it->first].setState(rda[it->first].state() + it->second);
+
+        // Unblock all resources whose requests can now be fufilled
+        list<pair<int, int>> resourceWaitlist = rda[it->first].waitlist();
+        list<pair<int, int>>::iterator it2 = resourceWaitlist.begin();
+        while (it2 != resourceWaitlist.end() && rda[it->first].state() > 0) {
+            if (rda[it->first].state() >= it2->second) {
+                rda[it->first].setState(rda[it->first].state() - it2->second);
+                pda[it2->first].addResource(it->first, it2->second);
+                pda[it2->first].setState(1);
+                rda[it->first].removeFromWaitlist(it2->first);
+                rl.add(it2->first, pda[it2->first].priority());
+            }
+            else
+                break;
+            it2++;
+        }
+    }
+
+    // Set state of destroyed process to free (state = -1)
     pda[index].destroy();
+
     rl.remove(index);
     pdaSz--;
     }
@@ -87,7 +114,59 @@ void Manager::timeout() {
 }
 
 void Manager::destroy(int index) {
-    destroyHelper(pda, rl, pdaSz, index);
+    destroyHelper(pda, rda, rl, pdaSz, index);
+    scheduler();
+}
+
+void Manager::request(int resourceIndex, int units) {
+    if (units < 0)
+        throw invalid_argument("Cannot request negative units");
+    if (units > rda[resourceIndex].inventory())
+        throw out_of_range("Units requested exceeds resource inventory");
+    
+    int processIndex = rl.running();
+    if (rda[resourceIndex].state() >= units) {
+        rda[resourceIndex].setState(rda[resourceIndex].state() - units);
+        pda[processIndex].addResource(resourceIndex, units);
+    }
+    else {
+        pda[processIndex].setState(0); 
+        rl.remove(processIndex);
+        rda[resourceIndex].addToWaitlist(processIndex, units);
+        scheduler();
+    }   
+}
+
+void Manager::release(int resourceIndex, int units) {
+    int processIndex = rl.running();
+    int heldUnits = pda[processIndex].units(resourceIndex);
+    if (heldUnits < 0)
+        throw invalid_argument("Cannot release a resource that is not held by the currently running process");
+    if (heldUnits < units)
+        throw invalid_argument("Cannot release more units than is held by the currently running process");
+    
+    // Release resource from currently running process
+    pda[processIndex].removeResource(resourceIndex);
+    
+    // Update the unit count for the freed resource
+    RCB r = rda[resourceIndex];
+    r.setState(pda[resourceIndex].state() + units);
+
+    // Unblock all resources whose requests can now be fufilled
+    list<pair<int, int>> resourceWaitlist = r.waitlist();
+    list<pair<int, int>>::iterator it = resourceWaitlist.begin();
+    while (it != resourceWaitlist.end() && r.state() > 0) {
+        if (r.state() >= it->second) {
+            r.setState(r.state() - it->second);
+            pda[it->first].addResource(resourceIndex, it->second);
+            pda[it->first].setState(1);
+            r.removeFromWaitlist(it->first);
+            rl.add(it->first, pda[it->first].priority());
+        }
+        else
+            break;
+        it++;
+    }
     scheduler();
 }
 

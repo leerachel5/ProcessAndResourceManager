@@ -6,9 +6,7 @@ using namespace std;
 
 void handleCommands(Manager& manager, string command){
     if (command == "in") {
-        cout << "Initializing Manager..." << endl;
         manager.init();
-        cout << "Manager initialized..." << endl;
     }
     else if (command == "cr") {
         int priority;
@@ -20,18 +18,24 @@ void handleCommands(Manager& manager, string command){
         cin >> index;
         manager.destroy(index);
     }
-    // else if (command == "rq")
-    //     request();
-    // else if (command == "rl")
-    //     release();
+    else if (command == "rq") {
+        int index;
+        int units;
+        cin >> index >> units;
+        manager.request(index, units);
+    }
+    else if (command == "rl") {
+        int index;
+        int units;
+        cin >> index >> units;
+        manager.release(index, units);
+    }
     else if (command == "to")
         manager.timeout();
 }
 
 int main() {
-    cout << "Creating Manager..." << endl;
     Manager manager;
-    cout << "Manager created..." << endl;
 
     string command;
     cin >> command;

@@ -17,6 +17,8 @@ public:
     void create(int priority);
     void timeout();
     void destroy(int index);
+    void request(int resourceIndex, int units);
+    void release(int resourceIndex, int units);
     void scheduler();
 
 private:
