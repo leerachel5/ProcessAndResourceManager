@@ -170,6 +170,6 @@ void Manager::release(int resourceIndex, int units) {
     scheduler();
 }
 
-void Manager::scheduler() {
-    cout << "Current running process: " << rl.running() << endl;
+int Manager::scheduler() {
+    return rl.running();
 }

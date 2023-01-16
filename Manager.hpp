@@ -19,7 +19,7 @@ public:
     void destroy(int index);
     void request(int resourceIndex, int units);
     void release(int resourceIndex, int units);
-    void scheduler();
+    int scheduler();
 
 private:
     PCB pda[PDA_MAX_SIZE];
