@@ -24,6 +24,9 @@ public:
     // Remove a process from the RL
     void remove(int processIndex);
 
+    // Print the rl
+    void printRL();
+
 private:
     list<int> rl[RL_LEVELS];
 };

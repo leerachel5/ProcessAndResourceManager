@@ -1,5 +1,6 @@
 #include "RL.hpp"
 #include <list>
+#include <iostream>
 
 using namespace std;
 
@@ -22,6 +23,7 @@ void RL::timeout() {
         if (rl[i].size() > 0) {
             rl[i].push_back(rl[i].front());
             rl[i].pop_front();
+            break;
         }
     }
 }
@@ -36,5 +38,15 @@ void RL::remove(int processIndex) {
             if (*it == processIndex)
                 rl[i].erase(it);
         }
+    }
+}
+
+void RL::printRL() {
+    for (int i = RL_LEVELS - 1; i >= 0; i--) {
+        cout << "Priority " << i << ": ";
+        for (list<int>::iterator it = rl[i].begin(); it != rl[i].end(); it++) {
+            cout << *it << " ";
+        }
+        cout << endl;
     }
 }

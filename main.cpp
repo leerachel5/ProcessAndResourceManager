@@ -9,7 +9,7 @@ const string INPUT_FILE = "in/input.txt";
 const string OUTPUT_FILE = "out/output.txt";
 
 
-void handleCommands(ifstream& inputFile, ofstream& outputFile, Manager& manager, string command){
+int handleCommands(ifstream& inputFile, Manager& manager, string command){
         if (command == "in") {
             manager.init();
         }
@@ -38,7 +38,7 @@ void handleCommands(ifstream& inputFile, ofstream& outputFile, Manager& manager,
         else if (command == "to")
             manager.timeout();
         
-        outputFile << manager.scheduler() << " ";
+        return manager.scheduler();
 }
 
 int main() {
@@ -51,16 +51,39 @@ int main() {
 
     if (inputFile.is_open()) {
         string command;
+        bool firstInit = true;
+        int firstProcess = true;
         do {
             inputFile >> command;
             try {
-                handleCommands(inputFile, outputFile, manager, command);
+                if (command == "in" && !firstInit) {
+                    outputFile << endl;
+                    firstProcess = true;
+                }
+                
+                int nextProcess = handleCommands(inputFile, manager, command);
+
+                if (firstInit && nextProcess == 0)
+                    firstInit = false;
+                
+                if (firstProcess) {
+                    outputFile << nextProcess;
+                    firstProcess = false;
+                }
+                else
+                    outputFile << " " << nextProcess;
             }
             catch (const invalid_argument& e) {
-                outputFile << "-1" << endl;
+                if (firstProcess)
+                    outputFile << "-1";
+                else
+                    outputFile << " -1";
             }
             catch (const out_of_range& e) {
-                outputFile << "-1" << endl;
+                if (firstProcess)
+                    outputFile << "-1";
+                else
+                    outputFile << " -1";
             }
         }
         while (!inputFile.eof());

@@ -6,6 +6,11 @@
 using namespace std;
 
 namespace {
+    void removeFromRDAWaitlist(RCB rda[], int processIndex) {
+        for (int i = 0; i < RDA_UNITS; i++)
+            rda[i].removeFromWaitlist(processIndex);
+    }
+
     void destroyHelper(PCB pda[], RCB rda[], RL& rl, int& pdaSz, int index) {
 
     // Recursively destroy all descendant processes
@@ -37,10 +42,16 @@ namespace {
         }
     }
 
+    // Remove process from rl or any resource waitlists
+    if (pda[index].state() == 1) { // running
+        rl.remove(index);
+    } else if (pda[index].state() == 0) { // blocked
+        removeFromRDAWaitlist(rda, index);
+    }
+
     // Set state of destroyed process to free (state = -1)
     pda[index].destroy();
 
-    rl.remove(index);
     pdaSz--;
     }
 }
@@ -81,8 +92,6 @@ void Manager::init() {
     // Reset RL
     rl = RL();
     rl.add(INITIAL_PROCESS_INDEX, INITIAL_PROCESS_PRIORITY);
-
-    scheduler();
 }
 
 void Manager::create(int priority) {
@@ -105,17 +114,14 @@ void Manager::create(int priority) {
     pda[newIndex] = newPCB;
     rl.add(newIndex, priority);
     pdaSz++;
-    scheduler();
 }
 
 void Manager::timeout() {
     rl.timeout();
-    scheduler();
 }
 
 void Manager::destroy(int index) {
     destroyHelper(pda, rda, rl, pdaSz, index);
-    scheduler();
 }
 
 void Manager::request(int resourceIndex, int units) {
@@ -133,7 +139,6 @@ void Manager::request(int resourceIndex, int units) {
         pda[processIndex].setState(0); 
         rl.remove(processIndex);
         rda[resourceIndex].addToWaitlist(processIndex, units);
-        scheduler();
     }   
 }
 
@@ -167,7 +172,6 @@ void Manager::release(int resourceIndex, int units) {
             break;
         it++;
     }
-    scheduler();
 }
 
 int Manager::scheduler() {
