@@ -35,8 +35,10 @@ void RL::add(int processIndex, int priority) {
 void RL::remove(int processIndex) {
     for (int i = 0; i < RL_LEVELS; i++) {
         for (list<int>::iterator it = rl[i].begin(); it != rl[i].end(); it++) {
-            if (*it == processIndex)
+            if (*it == processIndex) {
                 rl[i].erase(it);
+                return;
+            }
         }
     }
 }

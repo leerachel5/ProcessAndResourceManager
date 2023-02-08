@@ -28,8 +28,10 @@ void RCB::addToWaitlist(int processIndex, int units) {
 
 void RCB::removeFromWaitlist(int processIndex) {
     for (list<pair<int, int>>::iterator it = _waitlist.begin(); it != _waitlist.end(); it++) {
-        if (it->first == processIndex)
+        if (it->first == processIndex) {
             _waitlist.erase(it);
+            break;
+        }
     }
 }
 

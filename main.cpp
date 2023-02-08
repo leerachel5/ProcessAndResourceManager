@@ -37,7 +37,7 @@ int handleCommands(ifstream& inputFile, Manager& manager, string command){
         }
         else if (command == "to")
             manager.timeout();
-        
+
         return manager.scheduler();
 }
 
