@@ -7,8 +7,8 @@
 
 using namespace std;
 
-const string INPUT_FILE = "in/input.txt";
-const string OUTPUT_FILE = "out/output.txt";
+const string INPUT_FILE = "input.txt";
+const string OUTPUT_FILE = "output.txt";
 
 
 vector<string> tokenize(string s) {
