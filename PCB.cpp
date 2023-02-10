@@ -37,18 +37,36 @@ list<int> PCB::children() {
 }
 
 void PCB::addResource(int index, int units) {
-    _resources.push_back({index, units});
+    if (hasResource(index)) {
+        for (list<pair<int, int>>::iterator it = _resources.begin(); it != _resources.end(); it++) {
+            if (it->first == index) {
+                it->second += units;
+            }
+        }
+    } else {
+        _resources.push_back({index, units});
+    }
 }
 
 void PCB::removeResource(int index) {
     for (list<pair<int, int>>::iterator it = _resources.begin(); it != _resources.end(); it++) {
-        if (it->first == index)
+        if (it->first == index) {
             _resources.erase(it);
+            break;
+        }
     }
 }
 
 list<pair<int, int>> PCB::resources() {
     return _resources;
+}
+
+bool PCB::hasResource(int resourceIndex) {
+    for (pair<int, int> r : _resources) {
+        if (r.first == resourceIndex)
+            return true;
+    }
+    return false;
 }
 
 int PCB::units(int resourceIndex) {

@@ -129,6 +129,8 @@ void Manager::request(int resourceIndex, int units) {
         throw invalid_argument("Cannot request negative units");
     if (units > rda[resourceIndex].inventory())
         throw out_of_range("Units requested exceeds resource inventory");
+    if (resourceIndex < 0 || resourceIndex > 3)
+        throw out_of_range("Cannot request a non-existent resource.");
     
     int processIndex = rl.running();
 

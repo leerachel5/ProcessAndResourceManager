@@ -36,6 +36,9 @@ public:
 
     // Remove a reource by index
     void removeResource(int index);
+    
+    // Returns true if the PCB currently holds any number of units of the resource at resourceIndex
+    bool hasResource(int resourceIndex);
 
     // Get the list of resources in the form {i, j} where i is the resource index and j is the number of units
     list<pair<int, int>> resources();
